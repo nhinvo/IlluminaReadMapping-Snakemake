@@ -1,0 +1,8 @@
+experiment_name: read_mapping
+
+input: 
+  sample table: inputs/samples.tsv
+  adapter_file: inputs/all_illumina_adapters.fa  
+
+scratch directory: scratch
+results directory: results

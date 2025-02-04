@@ -1,0 +1,9 @@
+inputs/*
+!inputs/config.yaml
+!inputs/samples.tsv
+
+logs/*
+!logs/.temp.txt
+
+scratch/*
+results/*
