@@ -9,8 +9,6 @@ configfile: inputs/config.yaml
 keep-incomplete: False
 # unlock: True
 
-conda-prefix: /nfs/chisholmlab001/nvo/projects/24_AllisonPhageVariantCalling/Syn8102/QC/AllSynMapping/IlluminaReadMapping-Snakemake/.snakemake/cond
-
 cluster: 
   mkdir -p logs/{rule} &&
   sbatch
@@ -33,3 +31,4 @@ default-resources:
 
 set-resources:
   - final:cpus_per_task=1  # not multi-threaded 
+  - final:mem=5000  # does not need much mem

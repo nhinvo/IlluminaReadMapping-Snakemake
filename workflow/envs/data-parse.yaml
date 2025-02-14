@@ -3,6 +3,7 @@ channels:
 - defaults
 dependencies:
 - pandas
+- numpy
 - openpyxl
 - seaborn
 - matplotlib

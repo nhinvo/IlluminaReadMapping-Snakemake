@@ -1,7 +1,41 @@
 import pandas as pd 
+import numpy as np
 import seaborn as sns
 import matplotlib.pyplot as plt
 from pathlib import Path 
+
+def plot_cov_hist(plot_data):
+    """
+    """
+    num_subplots = len(plot_data)
+    num_cols = int(num_subplots ** 0.5 + 1)
+    num_rows = (num_subplots + num_cols - 1) // num_cols
+
+    # make figure
+    figsize = (num_cols * 4.5, num_rows * 4.5)
+    fig, axes = plt.subplots(num_rows, num_cols, figsize=figsize)
+    axes = axes.flatten()  
+
+    for count, ax in enumerate(axes):
+        try: 
+            sample_tuple = plot_data[count]
+        except IndexError: 
+            "More subplots specified than samples available. Leaving subplot empty."
+            ax.set_axis_off()  # hide unused subplots 
+            continue 
+
+        ax.hist(sample_tuple[1], bins=50, alpha=0.9, color='#43a2ca')
+        ax.set_title(sample_tuple[0])  
+        ax.set_ylabel('counts')
+        ax.set_xlabel('coverage')
+
+    # title and axis labels
+    fig.suptitle('Coverage Distribution Histogram', fontsize=16)
+
+    plt.tight_layout()
+    # plt.subplots_adjust(top=0.90, bottom=0.15, left=0.12, right=0.95)
+    plt.savefig(snakemake.output['cov_distribution'])
+    plt.close() 
 
 def process_pos(input_paths):
     """
@@ -10,14 +44,26 @@ def process_pos(input_paths):
         - median genome cov: median coverage across genome 
     """
     df_data = []
+    plot_data = []
+
     for fpath in input_paths:
         sname = Path(fpath).stem.replace('_pos', '')
         df = pd.read_table(fpath, names=['contig_id', 'pos', 'count'])
-        median_cov = df['count'].median()
 
+        # obtain genome median coverage
+        median_cov = df['count'].median()
         df_data.append({'sample': sname, 'median genome coverage': median_cov})
 
+        # obtain array of depth (coverage)
+        count_array = np.array(df['count'].values.tolist())
+        plot_data.append((sname, count_array))
+
+    # plot distribution of coverage 
+    plot_cov_hist(plot_data)  # histograms    
+
+    # df of median genome coverage
     df = pd.DataFrame(df_data)
+
     return df
 
 
@@ -101,29 +147,23 @@ def plot_summary_bar(df):
 
     plt.tight_layout()
 
-    plot_outdir = snakemake.input['plot_outdir']
-    plt.savefig(f'{plot_outdir}/SummaryMapping.png')
+    plt.savefig(snakemake.output['summary_mapping_stats'])
     plt.close()    
 
-def plot_summary(df):
-    """
-    """
-    plot_summary_bar(df)
-
 def main():
-    pos_df = process_pos(snakemake.input['pos'])  # process position coverage 
+    median_cov_df = process_pos(snakemake.input['pos'])  # process & plot position coverage 
     contig_df = process_contig(snakemake.input['contig'])  # process contig coverage 
     stats_df = process_stats(snakemake.input['stats'])  # obtain summary stats (i.e. % reads mapped)
 
     # merge and save data 
-    df = pd.merge(pos_df, stats_df, on='sample', how='outer')
+    df = pd.merge(median_cov_df, stats_df, on='sample', how='outer')
 
     # save data as Excel file 
-    with pd.ExcelWriter(snakemake.output[0]) as writer:
+    with pd.ExcelWriter(snakemake.output['final_excel']) as writer:
         df.to_excel(writer, sheet_name='mapping_stats', index=False)
         contig_df.to_excel(writer, sheet_name='contig_mapping_stats', index=False)
 
     # plot data 
-    plot_summary(df)
+    plot_summary_bar(df)
 
 main()
