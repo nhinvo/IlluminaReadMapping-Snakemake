@@ -9,6 +9,8 @@ configfile: inputs/config.yaml
 keep-incomplete: False
 # unlock: True
 
+conda-prefix: /nfs/chisholmlab001/nvo/projects/24_AllisonPhageVariantCalling/Syn8102/QC/AllSynMapping/IlluminaReadMapping-Snakemake/.snakemake/cond
+
 cluster: 
   mkdir -p logs/{rule} &&
   sbatch
