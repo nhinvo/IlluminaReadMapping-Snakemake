@@ -1,4 +1,6 @@
 import pandas as pd 
+import seaborn as sns
+import matplotlib.pyplot as plt
 from pathlib import Path 
 
 def process_pos(input_paths):
@@ -71,6 +73,42 @@ def process_stats(input_paths):
 
     return df
 
+def plot_summary_bar(df):
+    """
+    Plot stacked bars of mapped/unmapped reads for each sample. 
+    """
+    # prep df
+    df['percent_unmapped'] = 100 - df['percent_mapped']
+    df = df[['sample', 'percent_mapped', 'percent_unmapped']]
+    df = df.set_index(['sample'])
+
+    # Plot 
+    fig_width = len(df) * 0.5
+    fig, ax = plt.subplots(figsize=(fig_width, 5))  
+    colors = ['#8cbf88', '#dedede'] 
+    df.plot(kind='bar', stacked=True, width=0.9, color=colors, ax=ax)
+
+    # Legend
+    ax.legend(labels=['Mapped', 'Un-Mapped'], loc='upper left', bbox_to_anchor=(1, 1))
+
+    # Ticks 
+    plt.xticks(rotation=90)
+
+    # Titles and Labels 
+    plt.title('Mapped vs Unmapped Reads')
+    plt.ylabel('Read Percent')
+    plt.xlabel('Sample Name')
+
+    plt.tight_layout()
+
+    plot_outdir = snakemake.input['plot_outdir']
+    plt.savefig(f'{plot_outdir}/SummaryMapping.png')
+    plt.close()    
+
+def plot_summary(df):
+    """
+    """
+    plot_summary_bar(df)
 
 def main():
     pos_df = process_pos(snakemake.input['pos'])  # process position coverage 
@@ -80,8 +118,12 @@ def main():
     # merge and save data 
     df = pd.merge(pos_df, stats_df, on='sample', how='outer')
 
+    # save data as Excel file 
     with pd.ExcelWriter(snakemake.output[0]) as writer:
         df.to_excel(writer, sheet_name='mapping_stats', index=False)
         contig_df.to_excel(writer, sheet_name='contig_mapping_stats', index=False)
+
+    # plot data 
+    plot_summary(df)
 
 main()

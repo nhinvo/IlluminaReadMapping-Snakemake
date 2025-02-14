@@ -28,6 +28,7 @@ rule final:
         pos = expand(scratch_dict["mapping_stats"] / "{sample}_pos.tsv", sample=SAMPLES), 
         contig = expand(scratch_dict["mapping_stats"] / "{sample}_contig.tsv", sample=SAMPLES), 
         stats = expand(scratch_dict["mapping_stats"] / "{sample}_mapping_stats.tsv", sample=SAMPLES), 
+        plot_outdir = results_dir, 
     output: results_dict["final"],
     conda: "../envs/data-parse.yaml"
     script: "../scripts/final.py"
