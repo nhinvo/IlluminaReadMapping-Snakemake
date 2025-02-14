@@ -1,9 +1,12 @@
 inputs/*
 !inputs/config.yaml
 !inputs/samples.tsv
+!inputs/ref_genome/ref_genome.fasta
 
 logs/*
 !logs/.temp.txt
 
 scratch/*
 results/*
+
+.snakemake/*

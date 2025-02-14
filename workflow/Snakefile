@@ -21,7 +21,7 @@ scratch_dict = {
 }
 
 results_dict = {
-    "final": results_dir / "MappingCov.tsv"
+    "final": results_dir / "MappingCov.xlsx"
 }
 
 ##### Define the file files to generate #####

@@ -1,32 +1,24 @@
-rule samtools_depth:
+rule mapping_stats:
     """
-    Obtain coverage at each position. 
-    """
-    input: scratch_dict["read_mapping"] / "{sample}_sorted.bam", 
-    output: scratch_dict["mapping_stats"] / "{sample}_pos.tsv", 
-    conda: "../envs/samtools.yaml"
-    shell: "samtools depth --threads {resources.cpus_per_task} -o {output} {input}"
-
-
-rule samtools_contig_depth:
-    """
-    Obtain coverage of each contig (useful for mapping to concat genome). 
+    Obtain mapping stats.
     """
     input: scratch_dict["read_mapping"] / "{sample}_sorted.bam", 
-    output: scratch_dict["mapping_stats"] / "{sample}_contig.tsv", 
+    output: 
+        pos = scratch_dict["mapping_stats"] / "{sample}_pos.tsv", 
+        contig = scratch_dict["mapping_stats"] / "{sample}_contig.tsv", 
+        stats = scratch_dict["mapping_stats"] / "{sample}_mapping_stats.tsv", 
     conda: "../envs/samtools.yaml"
-    shell: "samtools idxstats --threads {resources.cpus_per_task} {input} > {output}"
+    shell: 
+        """
+        # obtain depth at all positions 
+        samtools depth --threads {resources.cpus_per_task} -o {output.pos} {input}
 
+        # obtain reads mapped to each contig 
+        samtools idxstats --threads {resources.cpus_per_task} {input} > {output.contig}
 
-rule samtools_stats:
-    """
-    Obtain summary stats (e.g. total reads, reads mapped, etc.)
-    """
-    input: scratch_dict["read_mapping"] / "{sample}_sorted.bam", 
-    output: scratch_dict["mapping_stats"] / "{sample}_mapping_stats.tsv", 
-    conda: "../envs/samtools.yaml"
-    shell: "samtools stats --threads {resources.cpus_per_task} {input} | grep ^SN | cut -f 2- > {output}"
-
+        # obtain mapping stats 
+        samtools stats --threads {resources.cpus_per_task} {input} | grep ^SN | cut -f 2- > {output.stats}
+        """
 
 rule final:
     """

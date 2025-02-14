@@ -3,7 +3,7 @@ rule samtools_view:
     Convert sam to bam.
     """
     input: scratch_dict["read_mapping"] / "{sample}.sam", 
-    output: temp(scratch_dict["read_mapping"] / "{sample}.bam"), 
+    output: temp(scratch_dict["read_mapping"] / "{sample}_unsorted.bam"), 
     conda: "../envs/samtools.yaml"
     shell:
         """
@@ -20,7 +20,7 @@ rule samtools_sort_index:
     Sort index bam. 
     """
     input: 
-        scratch_dict["read_mapping"] / "{sample}.bam", 
+        scratch_dict["read_mapping"] / "{sample}_unsorted.bam", 
     output: 
         sorted_bam = scratch_dict["read_mapping"] / "{sample}_sorted.bam", 
         indexed_bam = scratch_dict["read_mapping"] / "{sample}_sorted.bam.bai", 

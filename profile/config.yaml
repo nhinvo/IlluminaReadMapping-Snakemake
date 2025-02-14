@@ -24,7 +24,10 @@ cluster:
 # adjust as needed (increase time and mem if files are large)
 default-resources: 
   - time="12:00:00"  # default time 
-  - partition="newnodes"
+  - partition="sched_mit_chisholm"
   - mem=25000  # default memory 
   - cpus_per_task=5  # default: most rules are multi-threaded
   - tasks=1
+
+set-resources:
+  - final:cpus_per_task=1  # not multi-threaded 
