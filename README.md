@@ -1,6 +1,12 @@
 # IlluminaReadMapping-Snakemake
 Snakemake Pipeline for Coverage QC of Illumina short reads. 
 
+<p align="center">
+  <img src="workflow/images/SummaryMapping.png" width="40%" />
+  <img src="workflow/images/CovDistribution.png" width="40%" />
+</p>
+
+
 ## Setup
 ### 1. Install Snakemake and Conda/Mamba  
 Install Snakemake and Conda/Mamba following the instructions at this [link](https://snakemake.readthedocs.io/en/stable/getting_started/installation.html#:~:text=for%20installing%20Snakemake.-,Installation%20via%20Conda/Mamba,-This%20is%20the). 
