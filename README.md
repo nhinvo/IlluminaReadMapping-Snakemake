@@ -1,6 +1,7 @@
 # IlluminaReadMapping-Snakemake
-Snakemake Pipeline for Coverage QC of Illumina short reads. 
+Snakemake Pipeline for Coverage QC of Illumina short reads.  
 
+## Example Output Figures:  
 <p align="center">
   <img src="workflow/images/SummaryMapping.png" width="40%" />
   <img src="workflow/images/CovDistribution.png" width="40%" />
